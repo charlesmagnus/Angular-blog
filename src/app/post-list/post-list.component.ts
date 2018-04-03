@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { PostServiceService } from '../services/post-service.service';
+import { Subscription } from 'rxjs/Subscription';
 import { Post } from '../post';
 
 @Component({
@@ -6,35 +8,23 @@ import { Post } from '../post';
   templateUrl: './post-list.component.html',
   styleUrls: ['./post-list.component.css']
 })
-export class PostListComponent implements OnInit {
+export class PostListComponent implements OnInit, OnDestroy {
 
-  posts: Post[] = [
-    {
-      title: 'Article n°1',
-      // tslint:disable-next-line:max-line-length
-      content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum delectus libero repudiandae corrupti pariatur eligendi ex laudantium optio praesentium nisi, eius eos doloremque rerum ipsam labore, numquam sed, et facilis.',
-      loveIts: 0,
-      created_at: new Date()
-    },
-    {
-      title: 'Article n°2',
-      // tslint:disable-next-line:max-line-length
-      content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum delectus libero repudiandae corrupti pariatur eligendi ex laudantium optio praesentium nisi, eius eos doloremque rerum ipsam labore, numquam sed, et facilis.',
-      loveIts: 0,
-      created_at: new Date()
-    },
-    {
-      title: 'Article n°3',
-      // tslint:disable-next-line:max-line-length
-      content: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum delectus libero repudiandae corrupti pariatur eligendi ex laudantium optio praesentium nisi, eius eos doloremque rerum ipsam labore, numquam sed, et facilis.',
-      loveIts: 0,
-      created_at: new Date()
-    }
-  ];
+  posts: Post[] = [];
+  postSubscription: Subscription;
 
-  constructor() { }
+  constructor(private postService: PostServiceService) { }
 
   ngOnInit() {
+    this.postService.getPosts()
+    this.postSubscription = this.postService.postSubject.subscribe((posts: Post[]) => {
+      this.posts = posts;
+    });
+    this.postService.emitPosts();
+  }
+
+  ngOnDestroy() {
+    this.postSubscription.unsubscribe();
   }
 
 }

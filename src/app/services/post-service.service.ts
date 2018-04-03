@@ -1,74 +1,50 @@
 import { Injectable } from '@angular/core';
 import { Post } from '../post';
 import { Subject } from 'rxjs/Subject';
-import { HttpClient } from '@angular/common/http';
+import * as firebase from 'firebase';
+import { DataSnapshot } from 'firebase/database';
  
 @Injectable()
 export class PostServiceService {
 
 	postSubject = new Subject<Post[]>();
-	// https://fir-967bd.firebaseio.com/
 
-	private posts: Post[] = [
-		{
-			title: 'Post One',
-			content: 'This is post one',
-			loveIts: 1,
-			created_at: new Date()
-		},
-		{
-			title: 'Post Two',
-			content: 'This is post two',
-			loveIts: 0,
-			created_at: new Date()
-		},
-		{
-			title: 'Post Three',
-			content: 'This is post three',
-			loveIts: 0,
-			created_at: new Date()
-		}
-	]
+	private posts: Post[] = []
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
-  savePost() {
-  	this.http
-  	.post('https://fir-967bd.firebaseio.com/posts.json', this.posts)
-  	.subscribe(() => {
-  		console.log('Enregistrement succès!')
-  	},
-  	(error) => {
-  		console.log('Error: ', error);
-  	})
+  emitPosts() {
+    this.postSubject.next(this.posts);
   }
 
-  emitPostSubject() {
-  	this.postSubject.next(this.posts.slice());
+  addPost(newPost: Post) {
+    this.posts.push(newPost);
+    this.savePosts();
+    this.emitPosts();
   }
 
-  loveAll() {
-  	for(let post of this.posts) {
-  		post.loveIts = 1;
-  	}
-  	this.emitPostSubject();
+
+  delPost(id: number) {
+    this.posts.splice(id, 1);
+    this.savePosts();
+    this.emitPosts();
   }
 
-  notLoveAll() {
-  	for(let post of this.posts) {
-  		post.loveIts = 0;
-  	}
-  	this.emitPostSubject();
+  savePosts() {
+    firebase.database().ref('/posts').set(this.posts).then(() =>{
+      console.log('Saved');
+    },
+    (error) => {
+      console.log('Err: ', error);
+    })
   }
 
-  loveOne(id: number) {
-  	this.posts[id].loveIts = 1;
-  	this.emitPostSubject();
-  }
-
-  notLoveOne(id: number) {
-  	this.posts[id].loveIts = 0;
-  	this.emitPostSubject();
+  getPosts() {
+    firebase.database().ref('/posts')
+    .on('value', (data: DataSnapshot) =>{
+      this.posts = data.val() ? data.val() : [];
+      this.emitPosts();
+    });
   }
 
 }

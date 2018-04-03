@@ -1,3 +1,4 @@
-<ul class="list-group">
-  <app-post-list-item *ngFor="let post of posts" [post]="post"></app-post-list-item>
+<h1>Posts</h1>
+<ul class="list-group" *ngIf="posts">
+  <app-post-list-item *ngFor="let post of posts; let i = index" [post]="post" [index]="i"></app-post-list-item>
 </ul>

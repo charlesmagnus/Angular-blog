@@ -10,7 +10,8 @@
           <p>{{ post.content }}</p>
       </div>
     </div>
-    <button type="button" class="btn btn-success" (click)="onLove()">Love it</button>
-    <button type="button" class="btn btn-danger" (click)="onDisLove()">Don't love it</button>
+    <button type="button" class="btn btn-success" (click)="onLove(post)">Love it</button>
+    <button type="button" class="btn btn-danger" (click)="onDisLove(post)">Don't love it</button>
+    <button type="button" class="btn btn-danger right" (click)="delete(index)">Suprimer</button>
 </li>
 

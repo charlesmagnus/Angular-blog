@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { PostServiceService } from '../services/post-service.service';
+import { Post } from '../post';
 
 @Component({
   selector: 'app-post-list-item',
@@ -8,18 +10,29 @@ import { Component, Input, OnInit } from '@angular/core';
 export class PostListItemComponent implements OnInit {
 
   @Input() post: any;
+  @Input() index: number; 
 
-  constructor() { }
+  constructor(private postService: PostServiceService) { }
 
   ngOnInit() {
   }
 
-  onDisLove() {
+  onDisLove(post: Post) {
     this.post.loveIts --;
+    this.postService.savePosts();
+    this.postService.emitPosts();
+    // console.log(this.post);
   }
 
-  onLove() {
+  onLove(post: Post) {
     this.post.loveIts ++;
+    this.postService.savePosts();
+    this.postService.emitPosts();
+  }
+
+  delete(id: number) {
+    // console.log('id: ', id);
+    this.postService.delPost(id);
   }
 
 }
