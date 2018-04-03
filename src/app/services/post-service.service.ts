@@ -47,4 +47,16 @@ export class PostServiceService {
     });
   }
 
+  lovePost(post: Post) {
+    post.loveIts++;
+    this.savePosts();
+    this.emitPosts();
+  }
+
+  notLovePost(post: Post) {
+    post.loveIts--;
+    this.savePosts();
+    this.emitPosts();
+  }
+
 }
